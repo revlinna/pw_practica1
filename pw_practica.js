@@ -43,11 +43,15 @@ class AnimeList {
 
     showList() {
          console.log("La biblioteca contiene siguientes animes:")
-             this.list.forEach((currentAnime) => 
-                 console.log("Título: " + `&{currentAnime.title}`);
-                 console.log("Tipo: " + `&{currentAnime.type}`);
-                 console.log("Puntuación: " + `&{currentAnime.score}`);
-                 console.log("Cartel: " + `&{currentAnime.image_url}`);
+             this.list.forEach((currentAnime) => {
+                 console.log(`Título: ${currentAnime.title}. Tipo: ${currentAnime.type}. Puntuación: ${currentAnime.score}. Cartel: ${currentAnime.image_url}`)
+             })
+    }
+
+    addMultipleAnimes = (...animes) => {animes.forEach((currentAnime) => this.addAnime(currentAnime)) //uso de 'this' en vez de 'this.list' para no modificar la lista directamente
+    } 
+    
+    getAnimesByScoreRange = (minScore, maxScore) => {
         
 };
 
