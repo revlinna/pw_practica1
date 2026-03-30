@@ -35,8 +35,22 @@ class AnimeList {
         console.log("El anime indicado no existe en la lista.")
       }
     }
+
+//    showList() {
+  //      console.log("La biblioteca contiene siguientes animes:")
+    //    this.list.forEach((currentAnime) => console.log(`${currentAnime.title}, ${currentAnime.type}, ${currentAnime.score}, ${currentAnime.image_url}`));
+   // }
+
+    showList() {
+         console.log("La biblioteca contiene siguientes animes:")
+             this.list.forEach((currentAnime) => 
+                 console.log("Título: " + `&{currentAnime.title}`);
+                 console.log("Tipo: " + `&{currentAnime.type}`);
+                 console.log("Puntuación: " + `&{currentAnime.score}`);
+                 console.log("Cartel: " + `&{currentAnime.image_url}`);
+        
 };
-//make it just with filter
+
 
 
 
@@ -61,7 +75,7 @@ const haikyuu = new Anime({
 const jikanLibrary = new AnimeList();
 
 jikanLibrary.addAnime(haikyuu);
-
+jikanLibrary.showList();
 jikanLibrary.removeAnime(haikyuu.mal_id);
 
 
