@@ -20,38 +20,56 @@ class AnimeList {
     }
 
     addAnime(anime) {
-      if (!this.list.includes(anime)){
+      if (anime instanceof Anime){
+        if (!this.list.includes(anime)){
         this.list = [...this.list, anime];
+        console.log(`El anime ${anime.title} fue correctamente añadido a la lista de animes.`);
+      } else {
+        console.log(`El anime ${anime.title} ya existe en la lista.`);
       }
+    } else {
+      throw new Error("El parámetro no pertenece a la clase Anime");
+    }
     }
 
     removeAnime(animeId) {
-      let originalLength = this.list.length;
-      
-      this.list = this.list.filter((currentAnime) => currentAnime.mal_id !== animeId);
-      if (this.list.length < originalLength) {
-        console.log("El anime indicado fue correctamente eliminado de la lista.")
+      if (typeof animeId === "number" ) {
+        let originalLength = this.list.length;
+        this.list = this.list.filter((currentAnime) => currentAnime.mal_id !== animeId);
+        if (this.list.length < originalLength) {
+          console.log("El anime indicado fue correctamente eliminado de la lista.")
+        } else {
+          console.log("El anime indicado no existe en la lista.")
+        }
       } else {
-        console.log("El anime indicado no existe en la lista.")
+        throw console.log("El ID debe ser un número.")
       }
     }
-
-//    showList() {
-  //      console.log("La biblioteca contiene siguientes animes:")
-    //    this.list.forEach((currentAnime) => console.log(`${currentAnime.title}, ${currentAnime.type}, ${currentAnime.score}, ${currentAnime.image_url}`));
-   // }
 
     showList() {
          console.log("La biblioteca contiene siguientes animes:")
              this.list.forEach((currentAnime) => {
-                 console.log(`Título: ${currentAnime.title}. Tipo: ${currentAnime.type}. Puntuación: ${currentAnime.score}. Cartel: ${currentAnime.image_url}`)
+                 console.log(`Título: ${currentAnime.title}. Tipo: ${currentAnime.type}. Puntuación: ${currentAnime.score}. Portada: ${currentAnime.image_url}`)
              })
     }
 
-    addMultipleAnimes = (...animes) => {animes.forEach((currentAnime) => this.addAnime(currentAnime)) //uso de 'this' en vez de 'this.list' para no modificar la lista directamente
-    } 
+    addMultipleAnimes = (...animes) => {animes.forEach((currentAnime) => {
+      if (currentAnime instanceof Anime) {
+        this.addAnime(currentAnime) //uso de 'this' en vez de 'this.list' para no modificar la lista directamente
+      } else {
+        throw new Error("El parámetro no pertenece a la clase Anime");
+      }
+    })
+    };
     
     getAnimesByScoreRange = (minScore, maxScore) => {
+      let filteredList = this.list.filter((currentAnime) => currentAnime.score >= minScore && currentAnime.score <= maxScore);
+      return filteredList;
+    };
+
+   sortAnimesByPopularity = () => {
+    
+  };
         
 };
 
@@ -75,12 +93,44 @@ const haikyuu = new Anime({
   popularity: 11,
 });
 
+const deathNote = new Anime({
+  mal_id: 1535,
+  title: 'Death Note',
+  synopsis: 'Light Yagami encuentra un cuaderno sobrenatural que le da el poder de matar a cualquier persona cuyo nombre escriba en él.',
+  episodes: 37,
+  status: 'Finished Airing',
+  score: 8.62,
+  type: 'TV',
+  genres: [G_MYSTERY, G_PSYCHOLOGICAL, G_SUPERNATURAL, G_DRAMA],
+  studios: [S_MADHOUSE],
+  image_url: 'https://cdn.myanimelist.net/images/anime/9/9453.jpg',
+  popularity: 4,
+});
+
 
 const jikanLibrary = new AnimeList();
 
+//validación addAnime
 jikanLibrary.addAnime(haikyuu);
-jikanLibrary.showList();
+jikanLibrary.addAnime(haikyuu);
+console.log(" ");
+
+//validación removeAnime
 jikanLibrary.removeAnime(haikyuu.mal_id);
+jikanLibrary.removeAnime(haikyuu.mal_id);
+console.log(" ");
+
+//validación addMultipleAnimes
+jikanLibrary.addMultipleAnimes(haikyuu,deathNote);
+console.log(" ");
+
+//validación showList
+jikanLibrary.showList();
+console.log(" ");
+
+//validación getAnimesByScoreRange
+jikanLibrary.getAnimesByScoreRange(8,8.48);
+console.log(" ");
 
 
 
@@ -261,19 +311,19 @@ const naruto = new Anime({
 //  popularity: 11,
 //});
 
-const deathNote = new Anime({
-  mal_id: 1535,
-  title: 'Death Note',
-  synopsis: 'Light Yagami encuentra un cuaderno sobrenatural que le da el poder de matar a cualquier persona cuyo nombre escriba en él.',
-  episodes: 37,
-  status: 'Finished Airing',
-  score: 8.62,
-  type: 'TV',
-  genres: [G_MYSTERY, G_PSYCHOLOGICAL, G_SUPERNATURAL, G_DRAMA],
-  studios: [S_MADHOUSE],
-  image_url: 'https://cdn.myanimelist.net/images/anime/9/9453.jpg',
-  popularity: 4,
-});
+//const deathNote = new Anime({
+//  mal_id: 1535,
+//  title: 'Death Note',
+//  synopsis: 'Light Yagami encuentra un cuaderno sobrenatural que le da el poder de matar a cualquier persona cuyo nombre escriba en él.',
+//  episodes: 37,
+//  status: 'Finished Airing',
+//  score: 8.62,
+//  type: 'TV',
+//  genres: [G_MYSTERY, G_PSYCHOLOGICAL, G_SUPERNATURAL, G_DRAMA],
+//  studios: [S_MADHOUSE],
+//  image_url: 'https://cdn.myanimelist.net/images/anime/9/9453.jpg',
+//  popularity: 4,
+//});
 
 const chainsaw = new Anime({
   mal_id: 44511,
