@@ -15,14 +15,20 @@ class Anime {
 };
 
 class AnimeList {
+  #list;
     constructor(){
-        this.list = [];
+        this.#list = [];
     }
+  
+  //permite la lectura de datos por funciones fuera de la clase
+  get list() { 
+    return this.#list;
+  }
 
     addAnime(anime) {
       if (anime instanceof Anime){
-        if (!this.list.includes(anime)){
-        this.list = [...this.list, anime];
+        if (!this.#list.includes(anime)){
+        this.#list = [...this.#list, anime];
         console.log(`El anime ${anime.title} fue correctamente añadido a la lista de animes.`);
       } else {
         console.log(`El anime ${anime.title} ya existe en la lista.`);
@@ -34,28 +40,28 @@ class AnimeList {
 
     removeAnime(animeId) {
       if (typeof animeId === "number" ) {
-        let originalLength = this.list.length;
-        this.list = this.list.filter((currentAnime) => currentAnime.mal_id !== animeId);
-        if (this.list.length < originalLength) {
+        let originalLength = this.#list.length;//para detectar posteriormente si hubo cambio en la lista
+        this.#list = this.#list.filter((currentAnime) => currentAnime.mal_id !== animeId); //sustituye la lista original por una sin el anime indicado
+        if (this.#list.length < originalLength) {
           console.log("El anime indicado fue correctamente eliminado de la lista.")
         } else {
           console.log("El anime indicado no existe en la lista.")
         }
       } else {
-        throw console.log("El ID debe ser un número.")
+        throw  new Error("El ID debe ser un número.")
       }
     }
 
     showList() {
          console.log("La biblioteca contiene siguientes animes:")
-             this.list.forEach((currentAnime) => {
+             this.#list.forEach((currentAnime) => {
                  console.log(`Título: ${currentAnime.title}. Tipo: ${currentAnime.type}. Puntuación: ${currentAnime.score}. Portada: ${currentAnime.image_url}`)
              })
     }
 
     addMultipleAnimes = (...animes) => {animes.forEach((currentAnime) => {
-      if (currentAnime instanceof Anime) {
-        this.addAnime(currentAnime) //uso de 'this' en vez de 'this.list' para no modificar la lista directamente
+      if (currentAnime instanceof Anime) { //comprueba la clase de cada parámetro pasado
+        this.addAnime(currentAnime) //uso de 'this' en vez de 'this.#list' para no modificar la lista directamente
       } else {
         throw new Error("El parámetro no pertenece a la clase Anime.");
       }
@@ -65,9 +71,9 @@ class AnimeList {
     getAnimesByScoreRange = (minScore, maxScore) => {
       if (typeof minScore === 'number' && typeof maxScore === 'number') {
         if (minScore > maxScore) {
-          [minScore, maxScore] = [maxScore, minScore]; // el modo de hacer swap de variables se ha encontrado en este hilo https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
+          [minScore, maxScore] = [maxScore, minScore]; // cambia el orden de valores del rango en caso de estar introducidos al revés. el modo de hacer swap se ha encontrado en este hilo https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
         }
-        let filteredList = this.list.filter((currentAnime) => currentAnime.score >= minScore && currentAnime.score <= maxScore);
+        const filteredList = this.#list.filter((currentAnime) => currentAnime.score >= minScore && currentAnime.score <= maxScore);
         return filteredList;
       } else {
         throw new Error("Puntuaciones minScore y maxScore deben ser unos números.")
@@ -75,8 +81,8 @@ class AnimeList {
     };
 
    sortAnimesByPopularity = () => {
-     if (this.list.length > 0) {
-       const sortedList = this.list.sort((a,b) => b.score - a.score);
+     if (this.#list.length > 0) {
+       const sortedList = [...this.#list].sort((a,b) => b.popularity - a.popularity); //spread para no modificar el orden original de la lista
        console.log(sortedList)
      } else {
        throw new Error("La lista está vacía.")
@@ -85,8 +91,23 @@ class AnimeList {
 };
 
 const findAnimeById = (animeList, mal_id, index = 0) => {
-    return animeList[index].mal_id = mal_id ? animeList[index] : animeList[index-1].findAnimeById; //make it make sense!!!
+  if (!Array.isArray(animeList) && index === 0) { //comprueba el tipo de dato solo en la primera iteración
+        throw new Error("El parámetro animeList debe ser un array.")
+  } 
+  
+  if(typeof mal_id !== 'number' && index === 0) {
+    throw new Error("El parámetro Id debe ser un número.")
+  }
+  
+  if (index >= animeList.length) {
+    console.log("El Id buscado no existe en la lista.");
+    return null; //se retorna nulo en caso de haber iterado por todo el array sin encontrar nada
+  }
 
+  return animeList[index].mal_id === mal_id ? animeList[index] : findAnimeById(animeList, mal_id, index + 1) //función devuelve el elemento de array actual que cumplió requisito o llama a sí misma recursivamente
+};
+
+const getMostCommonGenre = (animeList) => {
 };
 
 
@@ -122,30 +143,52 @@ const deathNote = new Anime({
   popularity: 4,
 });
 
+const hunterXHunter = new Anime({
+  mal_id: 11061,
+  title: 'Hunter x Hunter (2011)',
+  synopsis: 'Gon Freecss descubre que su padre, al que creía muerto, es un Hunter de élite, y decide seguir sus pasos.',
+  episodes: 148,
+  status: 'Finished Airing',
+  score: 9.04,
+  type: 'TV',
+  genres: [G_ACTION, G_ADVENTURE, G_FANTASY, G_SHOUNEN],
+  studios: [S_MADHOUSE],
+  image_url: 'https://cdn.myanimelist.net/images/anime/1337/99013.jpg',
+  popularity: 5,
+});
+
 
 const jikanLibrary = new AnimeList();
 
-//validación addAnime
+console.log("--------validación addAnime--------");
 jikanLibrary.addAnime(haikyuu);
 jikanLibrary.addAnime(haikyuu);
 console.log(" ");
 
-//validación removeAnime
+console.log("--------validación removeAnime--------");
 jikanLibrary.removeAnime(haikyuu.mal_id);
 jikanLibrary.removeAnime(haikyuu.mal_id);
 console.log(" ");
 
-//validación addMultipleAnimes
-jikanLibrary.addMultipleAnimes(haikyuu,deathNote);
+console.log("--------validación addMultipleAnimes--------");
+jikanLibrary.addMultipleAnimes(haikyuu,deathNote,hunterXHunter);
 console.log(" ");
 
-//validación showList
+console.log("--------validación showList--------");
 jikanLibrary.showList();
 console.log(" ");
 
-//validación getAnimesByScoreRange
+console.log("--------validación getAnimesByScoreRange--------");
 jikanLibrary.getAnimesByScoreRange(8,8.48);
 console.log(" ");
+
+console.log("--------validación sortAnimesByPopularity--------");
+jikanLibrary.sortAnimesByPopularity();
+console.log(" ");
+
+console.log("--------validación findAnimeById--------");
+console.log(findAnimeById(jikanLibrary.list, 11061));
+
 
 
 
@@ -270,19 +313,19 @@ const cowboyBebop = new Anime({
   popularity: 39,
 });
 
-const hunterXHunter = new Anime({
-  mal_id: 11061,
-  title: 'Hunter x Hunter (2011)',
-  synopsis: 'Gon Freecss descubre que su padre, al que creía muerto, es un Hunter de élite, y decide seguir sus pasos.',
-  episodes: 148,
-  status: 'Finished Airing',
-  score: 9.04,
-  type: 'TV',
-  genres: [G_ACTION, G_ADVENTURE, G_FANTASY, G_SHOUNEN],
-  studios: [S_MADHOUSE],
-  image_url: 'https://cdn.myanimelist.net/images/anime/1337/99013.jpg',
-  popularity: 5,
-});
+//const hunterXHunter = new Anime({
+//  mal_id: 11061,
+//  title: 'Hunter x Hunter (2011)',
+// synopsis: 'Gon Freecss descubre que su padre, al que creía muerto, es un Hunter de élite, y decide seguir sus pasos.',
+//  episodes: 148,
+//  status: 'Finished Airing',
+//  score: 9.04,
+//  type: 'TV',
+//  genres: [G_ACTION, G_ADVENTURE, G_FANTASY, G_SHOUNEN],
+//  studios: [S_MADHOUSE],
+//  image_url: 'https://cdn.myanimelist.net/images/anime/1337/99013.jpg',
+//  popularity: 5,
+//});
 
 const dragonBallZ = new Anime({
   mal_id: 813,
