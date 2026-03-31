@@ -65,7 +65,7 @@ class AnimeList {
     getAnimesByScoreRange = (minScore, maxScore) => {
       if (typeof minScore === 'number' && typeof maxScore === 'number') {
         if (minScore > maxScore) {
-          [minScore, maxScore] = [maxScore, minScore] // el modo de hacer swap de variables se ha encontrado en este hilo https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
+          [minScore, maxScore] = [maxScore, minScore]; // el modo de hacer swap de variables se ha encontrado en este hilo https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
         }
         let filteredList = this.list.filter((currentAnime) => currentAnime.score >= minScore && currentAnime.score <= maxScore);
         return filteredList;
@@ -75,11 +75,19 @@ class AnimeList {
     };
 
    sortAnimesByPopularity = () => {
-    
-  };
-        
+     if (this.list.length > 0) {
+       const sortedList = this.list.sort((a,b) => b.score - a.score);
+       console.log(sortedList)
+     } else {
+       throw new Error("La lista está vacía.")
+     }
+   };        
 };
 
+const findAnimeById = (animeList, mal_id, index = 0) => {
+    return animeList[index].mal_id = mal_id ? animeList[index] : animeList[index-1].findAnimeById; //make it make sense!!!
+
+};
 
 
 
