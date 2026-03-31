@@ -57,14 +57,21 @@ class AnimeList {
       if (currentAnime instanceof Anime) {
         this.addAnime(currentAnime) //uso de 'this' en vez de 'this.list' para no modificar la lista directamente
       } else {
-        throw new Error("El parámetro no pertenece a la clase Anime");
+        throw new Error("El parámetro no pertenece a la clase Anime.");
       }
     })
     };
     
     getAnimesByScoreRange = (minScore, maxScore) => {
-      let filteredList = this.list.filter((currentAnime) => currentAnime.score >= minScore && currentAnime.score <= maxScore);
-      return filteredList;
+      if (typeof minScore === 'number' && typeof maxScore === 'number') {
+        if (minScore > maxScore) {
+          [minScore, maxScore] = [maxScore, minScore] // el modo de hacer swap de variables se ha encontrado en este hilo https://stackoverflow.com/questions/16201656/how-to-swap-two-variables-in-javascript
+        }
+        let filteredList = this.list.filter((currentAnime) => currentAnime.score >= minScore && currentAnime.score <= maxScore);
+        return filteredList;
+      } else {
+        throw new Error("Puntuaciones minScore y maxScore deben ser unos números.")
+      }
     };
 
    sortAnimesByPopularity = () => {
