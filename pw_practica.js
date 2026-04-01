@@ -103,11 +103,21 @@ const findAnimeById = (animeList, mal_id, index = 0) => {
     console.log("El Id buscado no existe en la lista.");
     return null; //se retorna nulo en caso de haber iterado por todo el array sin encontrar nada
   }
-
   return animeList[index].mal_id === mal_id ? animeList[index] : findAnimeById(animeList, mal_id, index + 1) //función devuelve el elemento de array actual que cumplió requisito o llama a sí misma recursivamente
 };
 
 const getMostCommonGenre = (animeList) => {
+    if (animeList.length > 0) {
+        console.log("El array está vacío);
+        return null
+    };
+    let genresArray = [];
+    animeList.forEach((anime) => 
+        for (let genre of genres) {
+        genresArray.push(genre);
+    };
+    const mostCommonGenre = genresArray.reduce((timesAppeared, currentGenre) => 
+                                              ) //KEEP GOING  
 };
 
 
