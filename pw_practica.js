@@ -90,6 +90,29 @@ class AnimeList {
    };        
 };
 
+// ── Géneros reutilizables (objetos con la estructura de Jikan) ──────────────
+const G_ACTION     = { mal_id: 1,  type: 'anime', name: 'Action',     url: 'https://myanimelist.net/anime/genre/1/Action' };
+const G_ADVENTURE  = { mal_id: 2,  type: 'anime', name: 'Adventure',  url: 'https://myanimelist.net/anime/genre/2/Adventure' };
+const G_COMEDY     = { mal_id: 4,  type: 'anime', name: 'Comedy',     url: 'https://myanimelist.net/anime/genre/4/Comedy' };
+const G_DRAMA      = { mal_id: 8,  type: 'anime', name: 'Drama',      url: 'https://myanimelist.net/anime/genre/8/Drama' };
+const G_FANTASY    = { mal_id: 10, type: 'anime', name: 'Fantasy',    url: 'https://myanimelist.net/anime/genre/10/Fantasy' };
+const G_SCIFI      = { mal_id: 24, type: 'anime', name: 'Sci-Fi',     url: 'https://myanimelist.net/anime/genre/24/Sci-Fi' };
+const G_SPORT      = { mal_id: 30, type: 'anime', name: 'Sports',     url: 'https://myanimelist.net/anime/genre/30/Sports' };
+const G_SHOUNEN    = { mal_id: 27, type: 'anime', name: 'Shounen',    url: 'https://myanimelist.net/anime/genre/27/Shounen' };
+const G_SUPERNATURAL = { mal_id: 37, type: 'anime', name: 'Supernatural', url: 'https://myanimelist.net/anime/genre/37/Supernatural' };
+const G_MYSTERY    = { mal_id: 7,  type: 'anime', name: 'Mystery',    url: 'https://myanimelist.net/anime/genre/7/Mystery' };
+const G_PSYCHOLOGICAL = { mal_id: 40, type: 'anime', name: 'Psychological', url: 'https://myanimelist.net/anime/genre/40/Psychological' };
+
+// ── Estudios reutilizables ───────────────────────────────────────────────────
+const S_MAPPA      = { mal_id: 569,  type: 'anime', name: 'MAPPA',          url: 'https://myanimelist.net/anime/producer/569' };
+const S_UFOTABLE   = { mal_id: 43,   type: 'anime', name: 'ufotable',       url: 'https://myanimelist.net/anime/producer/43' };
+const S_WIT        = { mal_id: 858,  type: 'anime', name: 'Wit Studio',     url: 'https://myanimelist.net/anime/producer/858' };
+const S_BONES      = { mal_id: 4,    type: 'anime', name: 'Bones',          url: 'https://myanimelist.net/anime/producer/4' };
+const S_MADHOUSE   = { mal_id: 11,   type: 'anime', name: 'Madhouse',       url: 'https://myanimelist.net/anime/producer/11' };
+const S_TOEI       = { mal_id: 28,   type: 'anime', name: 'Toei Animation', url: 'https://myanimelist.net/anime/producer/28' };
+const S_PIERROT    = { mal_id: 1,    type: 'anime', name: 'Pierrot',        url: 'https://myanimelist.net/anime/producer/1' };
+const S_TRIGGER    = { mal_id: 858,  type: 'anime', name: 'Trigger',        url: 'https://myanimelist.net/anime/producer/858' };
+
 const findAnimeById = (animeList, mal_id, index = 0) => {
   if (!Array.isArray(animeList) && index === 0) { //comprueba el tipo de dato solo en la primera iteración
         throw new Error("El parámetro animeList debe ser un array.")
@@ -107,17 +130,32 @@ const findAnimeById = (animeList, mal_id, index = 0) => {
 };
 
 const getMostCommonGenre = (animeList) => {
-    if (animeList.length > 0) {
-        console.log("El array está vacío);
-        return null
+    if (animeList.length === 0) {
+        console.log("El array está vacío");
+        return null;
     };
     let genresArray = [];
-    animeList.forEach((anime) => 
-        for (let genre of genres) {
-        genresArray.push(genre);
-    };
-    const mostCommonGenre = genresArray.reduce((timesAppeared, currentGenre) => 
-                                              ) //KEEP GOING  
+    animeList.forEach((anime) => {
+        for (let genre of anime.genres) {
+        genresArray.push(genre.name);
+}});
+    const genresRecount = genresArray.reduce((timesAppeared, currentGenre) => { 
+     if (typeof timesAppeared[currentGenre] !== "undefined") {
+       timesAppeared[currentGenre]++;
+     } else {
+       timesAppeared[currentGenre] = 1;
+     }
+      return timesAppeared;
+    }, {}); //https://stackoverflow.com/a/24252674
+  
+  let mostCommonGenre = genresRecount[0]; //блять да исправь уже это
+  
+  for (let genre in genresRecount) {
+    if (genresRecount[genre] > mostCommonGenre[genre]) {
+      mostCommonGenre = genre;
+    }
+  }
+    return mostCommonGenre;
 };
 
 
@@ -189,7 +227,7 @@ jikanLibrary.showList();
 console.log(" ");
 
 console.log("--------validación getAnimesByScoreRange--------");
-jikanLibrary.getAnimesByScoreRange(8,8.48);
+console.log(jikanLibrary.getAnimesByScoreRange(8,8.48));
 console.log(" ");
 
 console.log("--------validación sortAnimesByPopularity--------");
@@ -241,29 +279,6 @@ console.log(findAnimeById(jikanLibrary.list, 11061));
 
 
 
-
-// ── Géneros reutilizables (objetos con la estructura de Jikan) ──────────────
-const G_ACTION     = { mal_id: 1,  type: 'anime', name: 'Action',     url: 'https://myanimelist.net/anime/genre/1/Action' };
-const G_ADVENTURE  = { mal_id: 2,  type: 'anime', name: 'Adventure',  url: 'https://myanimelist.net/anime/genre/2/Adventure' };
-const G_COMEDY     = { mal_id: 4,  type: 'anime', name: 'Comedy',     url: 'https://myanimelist.net/anime/genre/4/Comedy' };
-const G_DRAMA      = { mal_id: 8,  type: 'anime', name: 'Drama',      url: 'https://myanimelist.net/anime/genre/8/Drama' };
-const G_FANTASY    = { mal_id: 10, type: 'anime', name: 'Fantasy',    url: 'https://myanimelist.net/anime/genre/10/Fantasy' };
-const G_SCIFI      = { mal_id: 24, type: 'anime', name: 'Sci-Fi',     url: 'https://myanimelist.net/anime/genre/24/Sci-Fi' };
-const G_SPORT      = { mal_id: 30, type: 'anime', name: 'Sports',     url: 'https://myanimelist.net/anime/genre/30/Sports' };
-const G_SHOUNEN    = { mal_id: 27, type: 'anime', name: 'Shounen',    url: 'https://myanimelist.net/anime/genre/27/Shounen' };
-const G_SUPERNATURAL = { mal_id: 37, type: 'anime', name: 'Supernatural', url: 'https://myanimelist.net/anime/genre/37/Supernatural' };
-const G_MYSTERY    = { mal_id: 7,  type: 'anime', name: 'Mystery',    url: 'https://myanimelist.net/anime/genre/7/Mystery' };
-const G_PSYCHOLOGICAL = { mal_id: 40, type: 'anime', name: 'Psychological', url: 'https://myanimelist.net/anime/genre/40/Psychological' };
-
-// ── Estudios reutilizables ───────────────────────────────────────────────────
-const S_MAPPA      = { mal_id: 569,  type: 'anime', name: 'MAPPA',          url: 'https://myanimelist.net/anime/producer/569' };
-const S_UFOTABLE   = { mal_id: 43,   type: 'anime', name: 'ufotable',       url: 'https://myanimelist.net/anime/producer/43' };
-const S_WIT        = { mal_id: 858,  type: 'anime', name: 'Wit Studio',     url: 'https://myanimelist.net/anime/producer/858' };
-const S_BONES      = { mal_id: 4,    type: 'anime', name: 'Bones',          url: 'https://myanimelist.net/anime/producer/4' };
-const S_MADHOUSE   = { mal_id: 11,   type: 'anime', name: 'Madhouse',       url: 'https://myanimelist.net/anime/producer/11' };
-const S_TOEI       = { mal_id: 28,   type: 'anime', name: 'Toei Animation', url: 'https://myanimelist.net/anime/producer/28' };
-const S_PIERROT    = { mal_id: 1,    type: 'anime', name: 'Pierrot',        url: 'https://myanimelist.net/anime/producer/1' };
-const S_TRIGGER    = { mal_id: 858,  type: 'anime', name: 'Trigger',        url: 'https://myanimelist.net/anime/producer/858' };
 
 // ── Instancias de Anime (datos reales de MAL) ───────────────────────────────
 
