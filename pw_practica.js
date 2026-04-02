@@ -140,7 +140,7 @@ const getMostCommonGenre = (animeList) => {
         genresArray.push(genre.name);
 }});
     const genresRecount = genresArray.reduce((timesAppeared, currentGenre) => { 
-     if (typeof timesAppeared[currentGenre] !== "undefined") {
+     if (timesAppeared[currentGenre] !== undefined) {
        timesAppeared[currentGenre]++;
      } else {
        timesAppeared[currentGenre] = 1;
@@ -148,17 +148,23 @@ const getMostCommonGenre = (animeList) => {
       return timesAppeared;
     }, {}); //https://stackoverflow.com/a/24252674
   
-  let mostCommonGenre = genresRecount[0]; //блять да исправь уже это
+  let mostCommonGenre = null; //блять да исправь уже это
+  let totalAppeared = 0; 
   
   for (let genre in genresRecount) {
-    if (genresRecount[genre] > mostCommonGenre[genre]) {
-      mostCommonGenre = genre;
+    if (genresRecount[genre] > totalAppeared) {
+        totalAppeared = genresRecount[genre];
+        mostCommonGenre = genre;
     }
   }
     return mostCommonGenre;
 };
 
-
+const getHighRatedAnimes = (animesArray, minScore) => {
+  const filteredAnimeArray = animesArray.filter((currentAnime) => currentAnime.score >= minScore); 
+    const titlesArray = filteredAnimeArray.map((currentAnime) => currentAnime.title);
+    return titlesArray;
+};
 
 
 
@@ -236,6 +242,10 @@ console.log(" ");
 
 console.log("--------validación findAnimeById--------");
 console.log(findAnimeById(jikanLibrary.list, 11061));
+
+console.log("--------validación getMostCommonGenre--------");
+console.log(getMostCommonGenre(jikanLibrary.list));
+console.log(" ");
 
 
 
