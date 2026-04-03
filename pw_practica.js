@@ -126,7 +126,7 @@ const findAnimeById = (animeList, mal_id, index = 0) => {
     console.log("El Id buscado no existe en la lista.");
     return null; //se retorna nulo en caso de haber iterado por todo el array sin encontrar nada
   }
-  return animeList[index].mal_id === mal_id ? animeList[index] : findAnimeById(animeList, mal_id, index + 1) //función devuelve el elemento de array actual que cumplió requisito o llama a sí misma recursivamente
+  return animeList[index].mal_id === mal_id ? animeList[index] : findAnimeById(animeList, mal_id, index + 1) //función devuelve el elemento de array actual en caso de coincidir el ID o llama a sí misma recursivamente
 };
 
 const getMostCommonGenre = (animeList) => {
@@ -135,35 +135,65 @@ const getMostCommonGenre = (animeList) => {
         return null;
     };
     let genresArray = [];
+    //extrae los géneros de todos los anime del array y los coloca en un array único (con duplicados)
     animeList.forEach((anime) => {
         for (let genre of anime.genres) {
         genresArray.push(genre.name);
 }});
+//cuenta las veces que el mismo género aparece en el array de géneros, devolviéndo un objeto con nombres de los géneros y su recuento
     const genresRecount = genresArray.reduce((timesAppeared, currentGenre) => { 
      if (timesAppeared[currentGenre] !== undefined) {
-       timesAppeared[currentGenre]++;
+       timesAppeared[currentGenre]++; //suma uno al recuento si encuentra duplicado
      } else {
-       timesAppeared[currentGenre] = 1;
+       timesAppeared[currentGenre] = 1; //inicia el recuento si es la primera aparición del género actual
      }
       return timesAppeared;
-    }, {}); //https://stackoverflow.com/a/24252674
+    }, {}); // dejo créditos por esta solución a Monarch Wadia https://stackoverflow.com/a/24252674
   
-  let mostCommonGenre = null; //блять да исправь уже это
+  let mostCommonGenre = null; 
   let totalAppeared = 0; 
-  
-  for (let genre in genresRecount) {
-    if (genresRecount[genre] > totalAppeared) {
-        totalAppeared = genresRecount[genre];
-        mostCommonGenre = genre;
+  for (let genre in genresRecount) { //itera por el objeto con géneros y su recuento
+    if (genresRecount[genre] > totalAppeared) { //compara el recuento del género actual con el guardado en totalAppeared 
+        totalAppeared = genresRecount[genre]; // actualiza la variable en caso de ser mayor
+        mostCommonGenre = genre; // actualiza el género más común
     }
   }
     return mostCommonGenre;
 };
 
 const getHighRatedAnimes = (animesArray, minScore) => {
-  const filteredAnimeArray = animesArray.filter((currentAnime) => currentAnime.score >= minScore); 
-    const titlesArray = filteredAnimeArray.map((currentAnime) => currentAnime.title);
-    return titlesArray;
+  if (typeof minScore !== "number") {
+     return new Error("El parámetro minScore debe ser un número.")
+  }
+  if (!Array.isArray(animesArray)){
+    return new Error("El parámetro animesArray debe ser un array.")
+  }
+  //filtra el array de animes dejándo solo a los cuya puntuación es igual o supera a la mínima
+  const filteredAnimeArray = animesArray.filter((currentAnime) => currentAnime.score >= minScore);
+  //crea un array con solo los nombres de animes que superaron el filtrado
+  const titlesArray = filteredAnimeArray.map((currentAnime) => currentAnime.title);
+  return titlesArray;
+};
+
+
+const getAnimeInfo = (anime) => {
+    if (!anime instanceof Anime) {
+    return new Error("El parámetro debe ser un objeto de clase Anime")
+  }
+  //extrae las propiedades del objeto pasado como parámetro
+  //en propiedades-arrays de objetos, extrae la propiedad 'nombre' del primer objeto de este array y asigna un nombre nuevo a esa propiedad
+  //si la propiedad-array está vacía, devuelve 'undefined'
+  const { title, type, score, genres:[{name: mainGenre} = {}], studios:[{ name: mainStudio }] = {}} = anime;
+  //créditos por esta estructura a Ronald Chen https://medium.com/@pyrolistical/destructuring-nested-objects-9dabdd01a3b8
+  console.log(`Título: ${title}`);
+  console.log(`Tipo: ${type}`);
+  console.log(`Puntuación: ${score}`);
+  console.log(`Género principal: ${mainGenre}`);
+  console.log(`Estudio: ${mainStudio}`);
+  
+const animeConFullInfo = {...anime, fullInfo: true}
+
+return animeConFullInfo;
 };
 
 
@@ -247,9 +277,12 @@ console.log("--------validación getMostCommonGenre--------");
 console.log(getMostCommonGenre(jikanLibrary.list));
 console.log(" ");
 
+console.log("--------validación getHighRatedAnimes--------");
+console.log(getHighRatedAnimes(jikanLibrary.list, 9));
+console.log(" ");
 
-
-
+console.log("--------validación getAnimeInfo--------");
+getAnimeInfo(deathNote);
 
 
 
