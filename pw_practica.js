@@ -177,12 +177,12 @@ const getHighRatedAnimes = (animesArray, minScore) => {
 
 
 const getAnimeInfo = (anime) => {
-    if (!anime instanceof Anime) {
+  if (!anime instanceof Anime) {
     return new Error("El parámetro debe ser un objeto de clase Anime")
   }
-  //extrae las propiedades del objeto pasado como parámetro
-  //en propiedades-arrays de objetos, extrae la propiedad 'nombre' del primer objeto de este array y asigna un nombre nuevo a esa propiedad
-  //si la propiedad-array está vacía, devuelve 'undefined'
+  //extrae las propiedades del objeto pasado como parámetro.
+  //en propiedades-arrays de objetos, extrae la propiedad 'nombre' del primer objeto de este array y asigna un nombre nuevo a esa propiedad.
+  //si la propiedad-array está vacía, devuelve 'undefined'.
   const { title, type, score, genres:[{name: mainGenre} = {}], studios:[{ name: mainStudio }] = {}} = anime;
   //créditos por esta estructura a Ronald Chen https://medium.com/@pyrolistical/destructuring-nested-objects-9dabdd01a3b8
   console.log(`Título: ${title}`);
@@ -195,6 +195,47 @@ const animeConFullInfo = {...anime, fullInfo: true}
 
 return animeConFullInfo;
 };
+
+const getAnimesByStudio = (animesArray, nombreEstudio) => {
+  if (!Array.isArray(animesArray)){
+    return new Error("El parámetro animesArray debe ser un array.")
+  }
+  if (animesArray.length === 0){
+    console.log("El array está vacío");
+    return null;
+  }
+  if (typeof nombreEstudio !== "string"){
+    return new Error("El parámetro nombreEstudio debe ser un string.")
+  }
+  //crea un objeto con propiedades iniciales que será ampliado y devuelto como resultado de la función
+  const animesByStudio = {studio: nombreEstudio, count: undefined,};
+  //filtra los animes en el array según el estudio de producción
+  const fullInfoAnimesByStudio = animesArray.filter((currentAnime) => {
+    for (let studio of currentAnime.studios){
+       if (studio.name === nombreEstudio){
+        return true;
+      }
+    }
+    return false
+  });
+  //crea una propiedad nueva con el total de animes encontrados
+  animesByStudio.count = fullInfoAnimesByStudio.length;
+  //crea una propiedad nueva donde ubica un array con títulos de los animes que superaron el filtrado
+  animesByStudio.animes = fullInfoAnimesByStudio.map((currentAnime) => currentAnime.title);
+  //guarda el número de puntuaciones acumuladas en el cálculo siguiente
+  let scoresCounted = 0;
+  animesByStudio.averageScore = fullInfoAnimesByStudio.reduce((totalScores, currentAnime) => {
+    if (currentAnime.score === "undefinded") {
+      scoresCounted--;
+      return 0;
+    }
+    scoresCounted++;
+    return totalScores + currentAnime.score;
+  }, 0) / scoresCounted;//no se divide entre la longitud con el fin de no alterar el resultado en caso puntuación no definida en alguno de los animes.
+  //redondea la puntuación media hasta dos decimales.
+  animesByStudio.averageScore = animesByStudio.averageScore.toFixed(2);
+  return animesByStudio;
+  };
 
 
 
@@ -282,9 +323,12 @@ console.log(getHighRatedAnimes(jikanLibrary.list, 9));
 console.log(" ");
 
 console.log("--------validación getAnimeInfo--------");
-getAnimeInfo(deathNote);
+console.log(getAnimeInfo(deathNote));
+console.log(" ");
 
-
+console.log("--------validación getAnimesByStudio--------");
+console.log(getAnimesByStudio(jikanLibrary.list, "Madhouse"));
+console.log(" ");
 
 
 
