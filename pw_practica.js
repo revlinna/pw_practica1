@@ -1,8 +1,9 @@
 //copia de este código se puede encontrar en mi repositorio en GitHub: https://github.com/revlinna/pw_practica1.git
 
 class Anime {
+  #mal_id;
     constructor({mal_id, title, synopsis, episodes, status, score, type, genres, studios, image_url, popularity}) {
-        this.mal_id = mal_id;
+        this.#mal_id = mal_id;
         this.title = title;
         this.synopsis = synopsis;
         this.episodes = episodes;
@@ -14,42 +15,55 @@ class Anime {
         this.image_url = image_url;
         this.popularity = popularity;
     }
-    set score(newScore) {
-        if (newScore >= 0 && newScore <= 10) {
-        this._score = newScore;
-        } else {
-            throw new Error("La puntuación debe ser un número entre 0 y 10");
-        }
-    }
-    get score() {
-        return this._score
-    }
-    
-    set status(newStatus) {
-        if (typeof newStatus !== "string"){
-            throw new Error("El status debe ser de tipo string");
-        }
-        this.status = newStatus;
-    }
-    get status() {
-        return this._status;
+
+    get id() {
+      return this.#mal_id
     }
 
-    set updateEpisodes(newTotalEpisodes) {
-        if (typeof newTotalEpisodes "== "number" && newTotalEpisodes < 0) {
-            throw new Error("El número de episodios debe ser un número y no puede ser menor que 0");
+    set episodes(newTotalEpisodes) {
+        if (typeof newTotalEpisodes !== "number" || newTotalEpisodes < 0) {
+            throw new Error("El número de episodios debe ser un número y no puede ser menor que 0.");
         }
-        this.episodes = newTotalEpisodes;
+        this._episodes = newTotalEpisodes;
     }
-    
+
+    get episodes() {
+      return this._episodes;
+    }
+
+    set status(newStatus) {
+        if (typeof newStatus !== "string"){
+          throw new Error("El status debe ser de tipo string.");
+        }
+        this._status = newStatus;
+    }
+
+    get status() {
+       return this._status;
+    }
+
+    set score(newScore) {
+      if (typeof newScore !== "number"){
+        throw new Error("La puntuación debe ser un número.")
+      }
+      if (newScore >= 0 && newScore <= 10) {
+        this._score = newScore;
+      } else {
+        throw new Error("La puntuación debe ser un número entre 0 y 10.");
+      }
+    }
+
+    get score() {
+      return this._score
+    }
+     
 };
 
 class AnimeList {
   #list;
     constructor(){
-        this.#list = [];
+       this.#list = [];
     }
-  
 //permite la lectura de datos por funciones fuera de la clase
   get list() { 
     return this.#list;
@@ -70,8 +84,10 @@ class AnimeList {
 //elimina un objeto Anime de la lista
     removeAnime(animeId) {
       if (typeof animeId === "number" ) {
-        let originalLength = this.#list.length;//para detectar posteriormente si hubo cambio en la lista
-        this.#list = this.#list.filter((currentAnime) => currentAnime.mal_id !== animeId); //sustituye la lista original por una sin el anime indicado
+        //variable usada luego para detectar si hubo cambio en la lista
+        let originalLength = this.#list.length;
+        //sustituye la lista original por una sin el anime indicado
+        this.#list = this.#list.filter((currentAnime) => currentAnime.id !== animeId);
         if (this.#list.length < originalLength) {
           console.log("El anime indicado fue correctamente eliminado de la lista.")
         } else {
@@ -83,10 +99,10 @@ class AnimeList {
     }
 //muestra info básica sobre cada Anime guardado en la lista
     showList() {
-         console.log("La biblioteca contiene siguientes animes:")
-             this.#list.forEach((currentAnime) => {
-                 console.log(`Título: ${currentAnime.title}. Tipo: ${currentAnime.type}. Puntuación: ${currentAnime.score}. Portada: ${currentAnime.image_url}`)
-             })
+      console.log("La biblioteca contiene siguientes animes:")
+      this.#list.forEach((currentAnime) => {
+        console.log(`Título: ${currentAnime.title}. Tipo: ${currentAnime.type}. Puntuación: ${currentAnime.score}. Portada: ${currentAnime.image_url}`)
+      })
     }
 //añade multiples objetos Anime a la lista
     addMultipleAnimes = (...animes) => {animes.forEach((currentAnime) => {
@@ -97,7 +113,7 @@ class AnimeList {
       }
     })
     };
-//busca animes en según un rango de puntuación
+//busca Animes según un rango de puntuación
     getAnimesByScoreRange = (minScore, maxScore) => {
       if (typeof minScore === 'number' && typeof maxScore === 'number') {
         // cambia el orden de valores del rango en caso de estar introducidos al revés. 
@@ -316,12 +332,12 @@ const steinsGate = new Anime({
 
 // --- Funciones ---
 //busca un Anime dentro del array de un AnimeList por su ID
-const findAnimeById = (animeList, mal_id, index = 0) => {
+const findAnimeById = (animeList, id, index = 0) => {
   if (!Array.isArray(animeList) && index === 0) { //comprueba el tipo de dato solo en la primera iteración
         throw new Error("El parámetro animeList debe ser un array.")
   } 
-  
-  if(typeof mal_id !== 'number' && index === 0) {
+
+  if(typeof id !== 'number' && index === 0) {
     throw new Error("El parámetro Id debe ser un número.")
   }
   //retorna nulo en caso de haber iterado por todo el array sin encontrar nada
@@ -330,7 +346,7 @@ const findAnimeById = (animeList, mal_id, index = 0) => {
     return null; 
   }
   //retorna el elemento de array actual en caso de coincidir el ID o llama a sí misma recursivamente
-  return animeList[index].mal_id === mal_id ? animeList[index] : findAnimeById(animeList, mal_id, index + 1) 
+  return animeList[index].id === id ? animeList[index] : findAnimeById(animeList, id, index + 1) 
 };
 
 //determina el género más común entre los Animes guardados en un array
@@ -375,10 +391,10 @@ const getMostCommonGenre = (animeList) => {
 //busca animes a partir de una puntuación mínima
 const getHighRatedAnimes = (animesArray, minScore) => {
   if (typeof minScore !== "number") {
-     return new Error("El parámetro minScore debe ser un número.")
+     throw new Error("El parámetro minScore debe ser un número.")
   }
   if (!Array.isArray(animesArray)){
-    return new Error("El parámetro animesArray debe ser un array.")
+    throw new Error("El parámetro animesArray debe ser un array.")
   }
   //filtra el array de animes según su puntuación
   const filteredAnimeArray = animesArray.filter((currentAnime) => currentAnime.score >= minScore);
@@ -387,10 +403,10 @@ const getHighRatedAnimes = (animesArray, minScore) => {
   return titlesArray;
 };
 
-
+//muestra información sobre un Anime
 const getAnimeInfo = (anime) => {
   if (!anime instanceof Anime) {
-    return new Error("El parámetro debe ser un objeto de clase Anime")
+    throw new Error("El parámetro debe ser un objeto de clase Anime")
   }
   //extrae las propiedades del objeto pasado como parámetro.
   //en propiedades-arrays de objetos, extrae la propiedad 'nombre' del primer objeto de este array y asigna un nombre nuevo a esa propiedad.
@@ -410,14 +426,14 @@ const getAnimeInfo = (anime) => {
 //busca Animes según su estudio de producción
 const getAnimesByStudio = (animesArray, nombreEstudio) => {
   if (!Array.isArray(animesArray)){
-    return new Error("El parámetro animesArray debe ser un array.")
+    throw new Error("El parámetro animesArray debe ser un array.")
   }
   if (animesArray.length === 0){
     console.log("El array está vacío");
     return null;
   }
   if (typeof nombreEstudio !== "string"){
-    return new Error("El parámetro nombreEstudio debe ser un string.")
+    throw new Error("El parámetro nombreEstudio debe ser un string.")
   }
   //crea un objeto con propiedades iniciales que será ampliado y devuelto como resultado de esa función
   const animesByStudio = {studio: nombreEstudio, count: undefined};
@@ -461,8 +477,8 @@ jikanLibrary.addAnime(haikyuu);
 console.log(" ");
 
 console.log("--------validación removeAnime--------");
-jikanLibrary.removeAnime(haikyuu.mal_id);
-jikanLibrary.removeAnime(haikyuu.mal_id);
+jikanLibrary.removeAnime(haikyuu.id);
+jikanLibrary.removeAnime(haikyuu.id);
 console.log(" ");
 
 console.log("--------validación addMultipleAnimes--------");
@@ -499,38 +515,6 @@ console.log(" ");
 console.log("--------validación getAnimesByStudio--------");
 console.log(getAnimesByStudio(jikanLibrary.list, "Madhouse"));
 console.log(" ");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
