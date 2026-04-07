@@ -14,7 +14,26 @@ class Anime {
         this.image_url = image_url;
         this.popularity = popularity;
     }
+    set updateScore(newScore) {
+        if (newScore >= 0 && newScore <= 10) {
+        this.score = newScore;
+        } else {
+            throw new Error("La puntuación debe ser un número entre 0 y 10");
+        }
+    }
+    set updateStatus(newStatus) {
+        if (typeof newStatus !== "string"){
+            throw new Error("El status debe ser de tipo string");
+        }
+        this.status = newStatus;
+    }
 
+    set updateEpisodes(newTotalEpisodes) {
+        if (typeof newTotalEpisodes "== "number" && newTotalEpisodes < 0) {
+            throw new Error("El número de episodios debe ser un número y no puede ser menor que 0");
+        }
+        this.episodes = newTotalEpisodes;
+    }
     
 };
 
