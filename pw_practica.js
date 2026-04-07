@@ -14,18 +14,25 @@ class Anime {
         this.image_url = image_url;
         this.popularity = popularity;
     }
-    set updateScore(newScore) {
+    set score(newScore) {
         if (newScore >= 0 && newScore <= 10) {
-        this.score = newScore;
+        this._score = newScore;
         } else {
             throw new Error("La puntuación debe ser un número entre 0 y 10");
         }
     }
-    set updateStatus(newStatus) {
+    get score() {
+        return this._score
+    }
+    
+    set status(newStatus) {
         if (typeof newStatus !== "string"){
             throw new Error("El status debe ser de tipo string");
         }
         this.status = newStatus;
+    }
+    get status() {
+        return this._status;
     }
 
     set updateEpisodes(newTotalEpisodes) {
